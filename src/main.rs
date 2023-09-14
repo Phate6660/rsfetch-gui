@@ -23,9 +23,12 @@ fn main() -> Result<(), eframe::Error> {
     let environment   = environment().unwrap();
     let gpus          = gpu().unwrap();
     let mut gpu_string: String = String::new();
+    let mut gpu_string_nf: String = String::new();
     for gpu in gpus {
         let string = format!("GPU:         {gpu}\n");
+        let string_nf = format!("{gpu}\n");
         gpu_string.push_str(&string);
+        gpu_string_nf.push_str(&string_nf);
     }
     let memory_total  = memory_total().unwrap();
     let memory_used   = memory_used().unwrap();
@@ -95,7 +98,7 @@ fn main() -> Result<(), eframe::Error> {
                     .code_editor()
                 );
                 ui.heading("GPU(s)");
-                ui.add(egui::TextEdit::multiline(&mut gpu_string.trim().to_owned())
+                ui.add(egui::TextEdit::multiline(&mut gpu_string_nf.trim().to_owned())
                     .horizontal_align(eframe::emath::Align::Center)
                     .desired_width(f32::INFINITY)
                     .code_editor()
@@ -120,6 +123,12 @@ fn main() -> Result<(), eframe::Error> {
                 );
                 ui.heading("Uptime");
                 ui.add(egui::TextEdit::singleline(&mut uptime.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("User");
+                ui.add(egui::TextEdit::singleline(&mut user.to_owned())
                     .horizontal_align(eframe::emath::Align::Center)
                     .desired_width(f32::INFINITY)
                     .code_editor()
