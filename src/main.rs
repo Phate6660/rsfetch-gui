@@ -62,22 +62,56 @@ fn main() -> Result<(), eframe::Error> {
         // TODO: Align the text in the center to make room for an image to the left.
         // TODO: Potentially change the background of the window to the image as an option.
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("CPU");
-            ui.add(egui::TextEdit::singleline(&mut cpu.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Device");
-            ui.add(egui::TextEdit::singleline(&mut device.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Distro");
-            ui.add(egui::TextEdit::singleline(&mut distro.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Environment");
-            ui.add(egui::TextEdit::singleline(&mut environment.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Memory");
-            ui.add(egui::TextEdit::singleline(&mut memory_string.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Music");
-            ui.add(egui::TextEdit::singleline(&mut music.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Packages");
-            ui.add(egui::TextEdit::singleline(&mut packages.to_owned()).desired_width(f32::INFINITY).code_editor());
-            ui.heading("Uptime");
-            ui.add(egui::TextEdit::singleline(&mut uptime.to_owned()).desired_width(f32::INFINITY).code_editor());
+            ui.vertical_centered_justified(|ui| {
+                ui.heading("CPU");
+                ui.add(egui::TextEdit::singleline(&mut cpu.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Device");
+                ui.add(egui::TextEdit::singleline(&mut device.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Distro");
+                ui.add(egui::TextEdit::singleline(&mut distro.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Environment");
+                ui.add(egui::TextEdit::singleline(&mut environment.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Memory");
+                ui.add(egui::TextEdit::singleline(&mut memory_string.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Music");
+                ui.add(egui::TextEdit::singleline(&mut music.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Packages");
+                ui.add(egui::TextEdit::singleline(&mut packages.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("Uptime");
+                ui.add(egui::TextEdit::singleline(&mut uptime.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+            });
         });
     })
 }
