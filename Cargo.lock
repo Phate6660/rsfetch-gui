@@ -1422,7 +1422,7 @@ dependencies = [
 [[package]]
 name = "nixinfo"
 version = "0.4.2"
-source = "git+https://github.com/Phate6660/nixinfo#9cec09dd8b67616c99cde1f8cbabf0c76c4338de"
+source = "git+https://github.com/Phate6660/nixinfo#bb4fbac0118c57b3cb131e8d3876376d8d7efb99"
 dependencies = [
  "glob",
  "mpd",

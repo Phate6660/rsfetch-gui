@@ -1,5 +1,5 @@
 use eframe::egui;
-use nixinfo::{cpu, device, distro, env, environment,
+use nixinfo::{cpu, device, distro, env, environment, gpu,
               memory_used, memory_total, music, packages,
               temp, uptime};
 
@@ -21,6 +21,12 @@ fn main() -> Result<(), eframe::Error> {
     let distro        = distro().unwrap();
     let editor        = env("EDITOR").unwrap();
     let environment   = environment().unwrap();
+    let gpus          = gpu().unwrap();
+    let mut gpu_string: String = String::new();
+    for gpu in gpus {
+        let string = format!("GPU:         {gpu}\n");
+        gpu_string.push_str(&string);
+    }
     let memory_total  = memory_total().unwrap();
     let memory_used   = memory_used().unwrap();
     let memory_string = format!("{memory_used}/{memory_total}");
@@ -41,6 +47,7 @@ fn main() -> Result<(), eframe::Error> {
         Distro:      {distro}\n\
         Editor:      {editor}\n\
         Environment: {environment}\n\
+        {gpu_string}\
         Memory:      {memory_string}\n\
         Music:       {music}\n\
         Packages:    {packages} [{manager}]\n\
@@ -83,6 +90,12 @@ fn main() -> Result<(), eframe::Error> {
                 );
                 ui.heading("Environment");
                 ui.add(egui::TextEdit::singleline(&mut environment.to_owned())
+                    .horizontal_align(eframe::emath::Align::Center)
+                    .desired_width(f32::INFINITY)
+                    .code_editor()
+                );
+                ui.heading("GPU(s)");
+                ui.add(egui::TextEdit::multiline(&mut gpu_string.trim().to_owned())
                     .horizontal_align(eframe::emath::Align::Center)
                     .desired_width(f32::INFINITY)
                     .code_editor()
