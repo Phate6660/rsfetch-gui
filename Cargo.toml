@@ -7,7 +7,12 @@ edition = "2021"
 
 [dependencies]
 eframe = "0.22.0"
+image = "0.24.7" # Required by egui_extras for image support
 nixinfo = { git = "https://github.com/Phate6660/nixinfo" }
+
+[dependencies.egui_extras]
+version = "0.22.0"
+features = ["image"]
 
 [features]
 music_mpd = ["nixinfo/music_mpd"]
