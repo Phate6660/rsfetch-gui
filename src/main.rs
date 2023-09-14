@@ -17,14 +17,22 @@ fn main() -> Result<(), eframe::Error> {
     let memory_total  = memory_total().unwrap();
     let memory_used   = memory_used().unwrap();
     let memory_string = format!("{memory_used}/{memory_total}");
-    let music         = music().unwrap();
+    
+    #[cfg(any(feature = "music_mpd", feature = "music_playerctl"))]
+    let music = music().unwrap();
+
+    #[cfg(not(any(feature = "music_mpd", feature = "music_playerctl")))]
+    let music = music();
+
+    let uptime = uptime().unwrap();
     let output = format!("\
         CPU:         {cpu}\n\
         Device:      {device}\n\
         Distro:      {distro}\n\
         Environment: {environment}\n\
         Memory:      {memory_string}\n\
-        Music:       {music}"
+        Music:       {music}\n\
+        Uptime:      {uptime}"
     );
 
     // Run the UI
@@ -54,6 +62,8 @@ fn main() -> Result<(), eframe::Error> {
             ui.add(egui::TextEdit::singleline(&mut memory_string.to_owned()).desired_width(f32::INFINITY));
             ui.heading("Music");
             ui.add(egui::TextEdit::singleline(&mut music.to_owned()).desired_width(f32::INFINITY));
+            ui.heading("Uptime");
+            ui.add(egui::TextEdit::singleline(&mut uptime.to_owned()).desired_width(f32::INFINITY));
         });
     })
 }
