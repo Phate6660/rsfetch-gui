@@ -3,6 +3,21 @@ use nixinfo::{cpu, device, distro, env, environment, gpu,
               memory_used, memory_total, music, packages,
               temp, uptime};
 
+#[macro_export]
+/// This macro adds the UI elements for the separate pieces of information being displayed.
+macro_rules! add_info {
+    ($h:expr, $b:expr, $ui:expr) => {
+        {
+            $ui.heading($h);
+            $ui.add(egui::TextEdit::singleline(&mut $b.to_owned())
+                .horizontal_align(eframe::emath::Align::Center)
+                .desired_width(f32::INFINITY)
+                .code_editor()
+            );
+        }
+    };
+}
+
 fn main() -> Result<(), eframe::Error> {
     let manager = if std::env::args().nth(1).is_some() {
         std::env::args().nth(1).unwrap()
@@ -17,14 +32,15 @@ fn main() -> Result<(), eframe::Error> {
     };
 
     let image_bytes = if image_path != "N/A" {
-        std::fs::read(&image_path).unwrap()
+        std::fs::read(&image_path).unwrap() // Read the bytes of the file and return it to `image_bytes`.
     } else {
-        [].to_vec()
+        [].to_vec() // To make this work, both return types needed to be the same.
+                    // So I return an empty vector if an image path wasn't specified.
     };
 
-    // Set all options to default for now
+    // Set the size of the window to 1142x532, and leave the rest of the options as the defaults.
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(1142.0, 532.0)), // Perfect size to fit all info
+        initial_window_size: Some(egui::vec2(1142.0, 532.0)), // Perfect size to fit all info + image.
         ..Default::default() 
     };
 
@@ -38,6 +54,7 @@ fn main() -> Result<(), eframe::Error> {
     let mut gpu_string: String = String::new();
     let mut gpu_string_nf: String = String::new();
     for gpu in gpus {
+        // TODO: Trim the final '\n' from the String.
         let string = format!("GPU:         {gpu}\n");
         let string_nf = format!("{gpu}\n");
         gpu_string.push_str(&string);
@@ -54,6 +71,9 @@ fn main() -> Result<(), eframe::Error> {
     let music         = music();
 
     let packages      = packages(&manager).unwrap();
+    // temp() returns a vector of tuples, with each tuple containing a device name and temperature
+    // respectively. The CPU is typically the first one, so we grab the first element of the vector
+    // and the second element of the tuple.
     let temp          = &temp().unwrap()[0].1;
     let uptime        = uptime().unwrap();
     let user          = env("USER").unwrap();
@@ -86,79 +106,29 @@ fn main() -> Result<(), eframe::Error> {
         // TODO: Potentially change the background of the window to the image as an option.
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal_centered(|ui| {
-                // Place the specified image (the second CLI arg), to the left of the separated info.
-                // Create the texture from the image.
+                // If an image is supplied, it will be displayed to the left of information content.
                 if ! image_bytes.is_empty() {
+                    // Create the image texture required to display the image.
                     let image_texture = egui_extras::RetainedImage::from_image_bytes(
                         &image_path, 
                         &image_bytes
                     ).unwrap();
 
-                    ui.image(image_texture.texture_id(ctx), [455.0, 455.0]); // Hardcoded image size
-                                                                             // to make it match the size
-                                                                             // of the information.
+                    // Display the image with a hardcoded size of 455x455 to make it match
+                    // the size of information being displayed to the right.
+                    ui.image(image_texture.texture_id(ctx), [455.0, 455.0]);
                 }
                 ui.vertical_centered_justified(|ui| {
-                    ui.heading("CPU");
-                    ui.add(egui::TextEdit::singleline(&mut cpu.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Device");
-                    ui.add(egui::TextEdit::singleline(&mut device.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Distro");
-                    ui.add(egui::TextEdit::singleline(&mut distro.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Environment");
-                    ui.add(egui::TextEdit::singleline(&mut environment.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("GPU(s)");
-                    ui.add(egui::TextEdit::multiline(&mut gpu_string_nf.trim().to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Memory");
-                    ui.add(egui::TextEdit::singleline(&mut memory_string.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Music");
-                    ui.add(egui::TextEdit::singleline(&mut music.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Packages");
-                    ui.add(egui::TextEdit::singleline(&mut packages.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("Uptime");
-                    ui.add(egui::TextEdit::singleline(&mut uptime.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
-                    ui.heading("User");
-                    ui.add(egui::TextEdit::singleline(&mut user.to_owned())
-                        .horizontal_align(eframe::emath::Align::Center)
-                        .desired_width(f32::INFINITY)
-                        .code_editor()
-                    );
+                    add_info!("CPU", cpu, ui);
+                    add_info!("Device", device, ui);
+                    add_info!("Distro", distro, ui);
+                    add_info!("Environment", environment, ui);
+                    add_info!("GPU(s)", gpu_string_nf, ui);
+                    add_info!("Memory", memory_string, ui);
+                    add_info!("Music", music, ui);
+                    add_info!("Packages", packages, ui);
+                    add_info!("Uptime", uptime, ui);
+                    add_info!("User", user, ui);
                 });
             });
         });
